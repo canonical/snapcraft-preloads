@@ -1,4 +1,4 @@
-TARGETS := semaphores
+TARGETS := semaphores bindtextdomain
 
 all:
 	$(foreach dir, $(TARGETS), $(MAKE) -C $(dir);)
