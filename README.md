@@ -7,6 +7,17 @@ consistent with confinement rules.
 Rewrite paths for `sem_open` and `sem_unlink` for them to write in the
 appropriate paths available to a given snap.
 
+### bindtextdomain
+Searches for domainname in alternative paths relative to snaps or the *platform*
+snap it may be using.
+
+These are the relative-to snap paths searched for are:
+
+- `gnome-platform/usr/share/locale`
+- `gnome-platform/usr/share/locale-langpack`
+- `usr/share/locale`
+- `usr/share/locale-langpack`
+
 ## Building
 To build all projects, just run `make` at the root of this project.
 
