@@ -36,7 +36,7 @@ static int (*original_unlink)(const char *);
 
 void debug(char *fmt, ...)
 {
-	if (secure_getenv("SHM_CHROMIUM_DEBUG")) {
+	if (getenv("SHM_CHROMIUM_DEBUG")) {
 		va_list va;
 		va_start(va, fmt);
 		fprintf(stderr, "SHM_CHROMIUM_WRAP: ");
@@ -84,11 +84,12 @@ static char * redirect_shm(const char *snapname, const char *pathname)
 
 	int n = snprintf(rewritten, rewritten_len, "/dev/shm/snap.%s.shm-%s", snapname, remainder);
 	if (n < 0 || n >= rewritten_len) {
-		fprintf(stderr, "snprintf truncated\n");
-		free(rewritten);
-		return NULL;
+		fprintf(stderr, "rewrite truncated for %s (%s)\n", pathname, rewritten);
 	}
-	rewritten[rewritten_len] = '\0';
+
+	// Ensure null-terminated.
+	rewritten[rewritten_len - 1] = '\0';
+
 	return rewritten;
 }
 
@@ -119,12 +120,11 @@ int open(const char *pathname, int flags, ...)
 		return original_open(pathname, flags, mode);
 	}
 
-	debug("[pre-call] redirected_path=%s (from path=%s)", redirected_path, pathname);
+	debug("[open pre-call] redirected_path=%s (from path=%s)", redirected_path, pathname);
 	int result = original_open(redirected_path, flags, mode);
-	debug("[post-call] redirected_path=%s ret=0x%x", redirected_path, result);
+	debug("[open post-call] redirected_path=%s ret=0x%x", redirected_path, result);
 
 	free(redirected_path);
-
 	return result;
 }
 
@@ -144,8 +144,10 @@ int unlink(const char *pathname)
 		return original_unlink(pathname);
 	}
 
-	debug("[pre-call] redirected_path=%s (from path=%s)", redirected_path, pathname);
+	debug("[unlink pre-call] redirected_path=%s (from path=%s)", redirected_path, pathname);
 	int result = original_unlink(redirected_path);
-	debug("[post-call] redirected_path=%s ret=0x%x", redirected_path, result);
+	debug("[unlink post-call] redirected_path=%s ret=0x%x", redirected_path, result);
+
+	free(redirected_path);
 	return result;
 }
