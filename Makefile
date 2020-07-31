@@ -1,10 +1,17 @@
-TARGETS := chromium-content-api semaphores bindtextdomain
-
+.PHONY: all
 all:
-	$(foreach dir, $(TARGETS), $(MAKE) -C $(dir);)
+	make -C chromium-content-api $@
+	make -C semaphores $@
+	make -C bindtextdomain $@
 
+.PHONY: install
 install:
-	$(foreach dir, $(TARGETS), $(MAKE) install -C $(dir);)
+	make -C chromium-content-api $@
+	make -C semaphores $@
+	make -C bindtextdomain $@
 
+.PHONY: clean
 clean:
-	$(foreach dir, $(TARGETS), $(MAKE) clean -C $(dir);)
+	make -C chromium-content-api $@
+	make -C semaphores $@
+	make -C bindtextdomain $@
